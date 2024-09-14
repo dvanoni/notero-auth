@@ -1,12 +1,12 @@
 {
-  "name": "cloudflare-worker-github-oauth-login",
+  "name": "notero-auth",
   "version": "1.0.0",
   "private": true,
-  "description": "A Cloudflare Worker + GitHub Pages Login Example",
-  "main": "github-oauth-login.js",
-  "author": "Gregor Martynus (https://twitter.com/gr2m)",
+  "description": "Supports Notion OAuth login used by Notero",
+  "main": "notion-oauth-login.js",
+  "author": "David Hoff-Vanoni",
   "license": "ISC",
-  "repository": "github:gr2m/cloudflare-worker-github-oauth-login",
+  "repository": "github:dvanoni/notero-auth",
   "release": {
     "branches": [
       "main"
