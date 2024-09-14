@@ -11,5 +11,8 @@
     "branches": [
       "main"
     ]
+  },
+  "devDependencies": {
+    "wrangler": "^3.78.2"
   }
 }
