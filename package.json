@@ -7,11 +7,6 @@
   "author": "David Hoff-Vanoni",
   "license": "ISC",
   "repository": "github:dvanoni/notero-auth",
-  "release": {
-    "branches": [
-      "main"
-    ]
-  },
   "scripts": {
     "deploy": "wrangler deploy",
     "start": "wrangler dev"
