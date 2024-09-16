@@ -12,6 +12,10 @@
       "main"
     ]
   },
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "start": "wrangler dev"
+  },
   "devDependencies": {
     "wrangler": "^3.78.2"
   }

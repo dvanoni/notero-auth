@@ -1,6 +1,7 @@
-name = "github-oauth-login"
-type = "javascript"
-account_id = "f8d9cac88285c4d654ba305a92e952d6"
-workers_dev = true
-route = ""
-zone_id = ""
+name = "notero-auth"
+main = "notion-oauth-login.js"
+compatibility_date = "2024-09-09"
+compatibility_flags = ["nodejs_compat_v2"]
+
+[vars]
+NOTION_REDIRECT_URI = "https://notero-auth.vanoni.dev"
