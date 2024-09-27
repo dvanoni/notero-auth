@@ -4,4 +4,4 @@ compatibility_date = "2024-09-09"
 compatibility_flags = ["nodejs_compat_v2"]
 
 [vars]
-NOTION_REDIRECT_URI = "https://notero-auth.vanoni.dev"
+NOTION_REDIRECT_URI = "https://auth.notero.vanoni.dev"
