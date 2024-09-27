@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "description": "Supports Notion OAuth login used by Notero",
-  "main": "notion-oauth-login.js",
   "author": "David Hoff-Vanoni",
   "license": "ISC",
   "repository": "github:dvanoni/notero-auth",
   "scripts": {
     "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
     "start": "wrangler dev"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "wrangler": "^3.78.10"
   }
 }
