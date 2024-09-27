@@ -3,5 +3,9 @@ main = "notion-oauth-login.js"
 compatibility_date = "2024-09-09"
 compatibility_flags = ["nodejs_compat_v2"]
 
+[observability]
+enabled = true
+head_sampling_rate = 1 # optional. default = 1.
+
 [vars]
 NOTION_REDIRECT_URI = "https://auth.notero.vanoni.dev"
