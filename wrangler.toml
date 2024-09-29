@@ -1,11 +1,15 @@
 name = "notero-auth"
-main = "notion-oauth-login.js"
-compatibility_date = "2024-09-09"
+main = "src/notion-oauth-login.js"
+compatibility_date = "2024-09-25"
 compatibility_flags = ["nodejs_compat_v2"]
+workers_dev = false
 
 [observability]
 enabled = true
-head_sampling_rate = 1 # optional. default = 1.
+
+[[routes]]
+pattern = "auth.notero.vanoni.dev"
+custom_domain = true
 
 [vars]
 NOTION_REDIRECT_URI = "https://auth.notero.vanoni.dev"
