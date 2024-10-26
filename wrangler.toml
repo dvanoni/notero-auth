@@ -15,4 +15,4 @@ pattern = "auth.notero.vanoni.dev"
 custom_domain = true
 
 [vars]
-NOTION_REDIRECT_URI = "https://auth.notero.vanoni.dev"
+NOTION_REDIRECT_URI = "https://auth.notero.vanoni.dev/callback"
