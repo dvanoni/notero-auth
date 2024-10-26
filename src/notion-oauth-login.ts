@@ -3,6 +3,7 @@ import type {
   OauthTokenResponse as OauthTokenSuccessResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 import { Buffer } from 'node:buffer';
+import { renderError, renderHtml } from './render';
 
 type OauthTokenErrorResponse = {
   error: string;
@@ -66,56 +67,6 @@ function openZotero(tokenResponse: any): Response {
     </script>
 `;
   return renderHtml(body);
-}
-
-function renderError(message: string, status: number): Response {
-  const body = `<h1 class="error">An error occurred</h1><p>${message}</p>`;
-  return renderHtml(body, status);
-}
-
-function renderHtml(body: string, status?: number): Response {
-  const html = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Notero Auth</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <style>
-      body {
-        align-items: center;
-        background-color: #f4f4f4;
-        display: flex;
-        flex-direction: column;
-        font-family: sans-serif;
-        margin: 2rem;
-        text-align: center;
-      }
-      h1 {
-        color: #19855A;
-      }
-      p {
-        color: #37584b;
-        line-height: 1.7;
-      }
-      p, code {
-        font-size: 1rem;
-      }
-      .error {
-        color: #af262d;
-      }
-    </style>
-  </head>
-  <body>
-    <img src="https://assets.vanoni.dev/notero-128.png" alt="Notero logo" width="64" height="64">
-${body}
-  </body>
-</html>
-`;
-  return new Response(html, {
-    headers: { 'Content-Type': 'text/html' },
-    status,
-  });
 }
 
 export default {
