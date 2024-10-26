@@ -19,11 +19,7 @@ export const handler: ExportedHandlerFetchHandler<Env> = async (
   const params = new URL(request.url).searchParams;
 
   const error = params.get('error');
-  if (error) {
-    // TODO: Only render valid error codes (to prevent injection attacks)
-    // See https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.2.1
-    return renderError(`Error code: <code>${error}</code>`, 401);
-  }
+  if (error) return renderOauthError(error);
 
   const code = params.get('code');
   if (!code) return renderError('Missing <code>code</code> parameter', 400);
@@ -46,12 +42,7 @@ export const handler: ExportedHandlerFetchHandler<Env> = async (
     }
 
     if ('error' in tokenResponse) {
-      // TODO: Only render valid error codes (to prevent injection attacks)
-      // See https://datatracker.ietf.org/doc/html/rfc6749#section-5.2
-      return renderError(
-        `Error code: <code>${tokenResponse.error}</code>`,
-        401,
-      );
+      return renderOauthError(tokenResponse.error);
     }
 
     return openZotero(tokenResponse);
@@ -60,6 +51,40 @@ export const handler: ExportedHandlerFetchHandler<Env> = async (
     return renderError(error.message, 500);
   }
 };
+
+/**
+ * Render the error if it's a valid one from either of the following:
+ *  - https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.2.1
+ *  - https://datatracker.ietf.org/doc/html/rfc6749#section-5.2
+ *
+ * Otherwise, render a generic error message.
+ */
+function renderOauthError(error: string): Response {
+  switch (error) {
+    case 'access_denied':
+      return renderError('Access denied', 403);
+    case 'invalid_client':
+      return renderError('Invalid client', 401);
+    case 'invalid_grant':
+      return renderError('Invalid grant', 400);
+    case 'invalid_request':
+      return renderError('Invalid request', 400);
+    case 'invalid_scope':
+      return renderError('Invalid scope', 400);
+    case 'server_error':
+      return renderError('Server error', 500);
+    case 'temporarily_unavailable':
+      return renderError('Temporarily unavailable', 503);
+    case 'unauthorized_client':
+      return renderError('Unauthorized client', 401);
+    case 'unsupported_grant_type':
+      return renderError('Unsupported grant type', 400);
+    case 'unsupported_response_type':
+      return renderError('Unsupported response type', 400);
+    default:
+      return renderError('Unexpected error', 500);
+  }
+}
 
 async function createOauthToken(
   clientId: string,
