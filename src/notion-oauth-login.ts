@@ -2,7 +2,7 @@ import type {
   OauthTokenParameters,
   OauthTokenResponse as OauthTokenSuccessResponse,
 } from '@notionhq/client/build/src/api-endpoints';
-import { Buffer } from 'node:buffer';
+import { base64Encode } from './utils';
 import { renderError, renderHtml } from './render';
 
 type OauthTokenErrorResponse = {
@@ -10,10 +10,6 @@ type OauthTokenErrorResponse = {
 };
 
 type OauthTokenResponse = OauthTokenSuccessResponse | OauthTokenErrorResponse;
-
-function base64Encode(str: string): string {
-  return Buffer.from(str).toString('base64url');
-}
 
 async function createOauthToken(
   clientId: string,
