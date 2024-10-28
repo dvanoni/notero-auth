@@ -2,8 +2,20 @@ import type {
   OauthTokenParameters,
   OauthTokenResponse as OauthTokenSuccessResponse,
 } from '@notionhq/client/build/src/api-endpoints';
+import {
+  encrypt,
+  generateSymmetricKey,
+  importRSAPublicKey,
+  wrapKey,
+} from '../crypto';
 import { renderError, renderHtml } from '../render';
-import { base64Encode } from '../utils';
+import { base64Decode, base64Encode, utf8JSONEncode } from '../utils';
+
+type EncryptedTokenResponse = {
+  key: string;
+  iv: string;
+  tokenResponse: string;
+};
 
 type OauthTokenErrorResponse = {
   error: string;
@@ -37,15 +49,15 @@ export const handler: ExportedHandlerFetchHandler<Env> = async (
       code,
     );
 
-    if (!tokenResponse) {
-      return renderError('Unexpected error', 500);
-    }
-
     if ('error' in tokenResponse) {
       return renderOauthError(tokenResponse.error);
     }
 
-    return openZotero(tokenResponse);
+    const encryptedTokenResponse = await encryptTokenResponse(
+      state,
+      tokenResponse,
+    );
+    return openZotero(encryptedTokenResponse);
   } catch (error: any) {
     console.error(error);
     return renderError(error.message, 500);
@@ -91,7 +103,7 @@ async function createOauthToken(
   clientSecret: string,
   redirectUri: string,
   code: string,
-): Promise<OauthTokenResponse | null> {
+): Promise<OauthTokenResponse> {
   const body: OauthTokenParameters = {
     code,
     grant_type: 'authorization_code',
@@ -109,15 +121,39 @@ async function createOauthToken(
     body: JSON.stringify(body),
   });
   const json = await response.json();
-  if (typeof json !== 'object' || json === null) return null;
-  if ('access_token' in json) return json as OauthTokenSuccessResponse;
-  if ('error' in json) return json as OauthTokenErrorResponse;
-  return null;
+  if (
+    json !== null &&
+    typeof json === 'object' &&
+    ('access_token' in json || 'error' in json)
+  ) {
+    return json as OauthTokenResponse;
+  }
+  throw new Error('Invalid access token response');
 }
 
-function openZotero(tokenResponse: OauthTokenSuccessResponse): Response {
-  const encodedResponse = base64Encode(JSON.stringify(tokenResponse));
-  const body = `
+async function encryptTokenResponse(
+  base64PublicKey: string,
+  tokenResponse: OauthTokenSuccessResponse,
+): Promise<EncryptedTokenResponse> {
+  const publicKeyData = base64Decode(base64PublicKey);
+  const publicKey = await importRSAPublicKey(publicKeyData);
+
+  const symmetricKey = await generateSymmetricKey();
+  const wrappedKey = await wrapKey(symmetricKey, publicKey);
+
+  const tokenResponseData = utf8JSONEncode(tokenResponse);
+  const { encryptedData, iv } = await encrypt(symmetricKey, tokenResponseData);
+
+  return {
+    key: base64Encode(wrappedKey),
+    iv: base64Encode(iv),
+    tokenResponse: base64Encode(encryptedData),
+  };
+}
+
+function openZotero(encryptedTokenResponse: EncryptedTokenResponse): Response {
+  const params = new URLSearchParams(encryptedTokenResponse);
+  return renderHtml(`
     <h1>Connecting Notero to Notion</h1>
     <p>
       When prompted, click <strong>"Open Zotero"</strong> to complete the connection.<br>
@@ -125,9 +161,8 @@ function openZotero(tokenResponse: OauthTokenSuccessResponse): Response {
     </p>
     <script>
       setTimeout(() => {
-        window.open("zotero://notero/notion-auth?tokenResponse=${encodedResponse}");
+        window.open("zotero://notero/notion-auth?${params}", "_self");
       }, 1000);
     </script>
-`;
-  return renderHtml(body);
+`);
 }
