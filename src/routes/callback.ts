@@ -39,6 +39,11 @@ export const handler: ExportedHandlerFetchHandler<Env> = async (
   const state = params.get('state');
   if (!state) return renderError('Missing <code>state</code> parameter', 400);
 
+  const [publicKey, nonce] = state.split('.');
+  if (!publicKey || !nonce) {
+    return renderError('Invalid <code>state</code> parameter', 400);
+  }
+
   // TODO: Check `state` parameter to prevent CSRF attacks
 
   try {
@@ -54,10 +59,10 @@ export const handler: ExportedHandlerFetchHandler<Env> = async (
     }
 
     const encryptedTokenResponse = await encryptTokenResponse(
-      state,
+      publicKey,
       tokenResponse,
     );
-    return openZotero(encryptedTokenResponse);
+    return openZotero(encryptedTokenResponse, nonce);
   } catch (error: any) {
     console.error(error);
     return renderError(error.message, 500);
@@ -151,8 +156,11 @@ async function encryptTokenResponse(
   };
 }
 
-function openZotero(encryptedTokenResponse: EncryptedTokenResponse): Response {
-  const params = new URLSearchParams(encryptedTokenResponse);
+function openZotero(
+  encryptedTokenResponse: EncryptedTokenResponse,
+  nonce: string,
+): Response {
+  const params = new URLSearchParams({ ...encryptedTokenResponse, nonce });
   return renderHtml(`
     <h1>Connecting Notero to Notion</h1>
     <p>
