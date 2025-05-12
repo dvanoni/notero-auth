@@ -161,16 +161,39 @@ function openZotero(
   nonce: string,
 ): Response {
   const params = new URLSearchParams({ ...encryptedTokenResponse, nonce });
+  const zoteroUrl = `zotero://notero/notion-auth?${params}`;
+
   return renderHtml(`
     <h1>Connecting Notero to Notion</h1>
+    <p>Return to Zotero to complete the connection to Notion.</p>
+    <a href="${zoteroUrl}" class="button">Open Zotero</a>
     <p>
-      When prompted, click <strong>"Open Zotero"</strong> to complete the connection.<br>
-      You may then close this page.
+      If Zotero does not open or successfully connect to Notion, copy the
+      token below and paste it into the Notero preferences window.
     </p>
+    <div class="full-width input-group">
+      <input id="token-input" class="monospace" type="text" value="${params}" readonly>
+      <button id="copy-button" class="button">Copy</button>
+    </div>
     <script>
-      setTimeout(() => {
-        window.open("zotero://notero/notion-auth?${params}", "_self");
-      }, 1000);
+      document.getElementById('token-input').addEventListener('click', (e) => {
+        e.target.select();
+      });
+
+      document.getElementById('copy-button').addEventListener('click', (e) => {
+        try {
+          navigator.clipboard.writeText('${params}');
+
+          const originalText = e.target.textContent;
+          e.target.textContent = 'Copied!';
+          setTimeout(() => {
+            e.target.textContent = originalText;
+          }, 2000);
+        } catch (error) {
+          console.error('Failed to copy token:', error);
+          e.target.textContent = 'Failed';
+        }
+      });
     </script>
 `);
 }

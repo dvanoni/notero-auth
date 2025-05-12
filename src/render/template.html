@@ -7,13 +7,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <style>
       body {
-        align-items: center;
         background-color: #f4f4f4;
-        display: flex;
-        flex-direction: column;
         font-family: sans-serif;
         margin: 2rem;
         text-align: center;
+      }
+      .container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
+        max-width: 600px;
       }
       h1 {
         color: #19855a;
@@ -29,15 +33,53 @@
       .error {
         color: #af262d;
       }
+      .monospace {
+        font-family: monospace;
+      }
+      .button {
+        background: #19855a;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        display: inline-block;
+        font-weight: bold;
+        padding: 10px 20px;
+        text-decoration: none;
+      }
+      .button:hover {
+        background: #156142;
+      }
+      .full-width {
+        width: 100%;
+      }
+      .input-group {
+        display: flex;
+      }
+      .input-group input {
+        border: 1px solid #ccc;
+        border-radius: 4px 0 0 4px;
+        flex-grow: 1;
+        font-size: 0.9rem;
+        padding: 8px 12px;
+      }
+      .input-group .button {
+        border: none;
+        border-radius: 0 4px 4px 0;
+        margin-left: -1px;
+        padding: 8px 12px;
+      }
     </style>
   </head>
   <body>
-    <img
-      src="https://assets.vanoni.dev/notero-128.png"
-      alt="Notero logo"
-      width="64"
-      height="64"
-    />
-    ${body}
+    <div class="container">
+      <img
+        src="https://assets.vanoni.dev/notero-128.png"
+        alt="Notero logo"
+        width="64"
+        height="64"
+      />
+      ${body}
+    </div>
   </body>
 </html>
