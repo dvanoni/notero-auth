@@ -15,7 +15,7 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2021",
-    "types": ["./.wrangler/types/runtime.d.ts", "@types/node"]
+    "types": ["@types/node"]
   },
   "include": ["types.d.ts", "worker-configuration.d.ts", "src/**/*.ts"]
 }
